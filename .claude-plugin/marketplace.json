@@ -13,7 +13,7 @@
       "name": "brain",
       "source": "./plugins/brain",
       "description": "Second brain - store notes and recall with semantic search",
-      "version": "2.0.0"
+      "version": "2.1.0"
     }
   ]
 }
