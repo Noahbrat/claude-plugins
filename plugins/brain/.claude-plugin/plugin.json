@@ -1,0 +1,10 @@
+{
+  "name": "brain",
+  "description": "Save notes to your second brain - syncs via iCloud across all devices",
+  "version": "1.0.0",
+  "author": {
+    "name": "Noah Bratzel",
+    "github": "Noahbrat"
+  },
+  "keywords": ["notes", "knowledge", "second-brain", "icloud"]
+}

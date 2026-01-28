@@ -1,0 +1,19 @@
+{
+  "name": "noahbrat-tools",
+  "owner": {
+    "name": "Noah Bratzel",
+    "github": "Noahbrat"
+  },
+  "metadata": {
+    "description": "Noah's personal Claude Code tools and utilities",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "brain",
+      "source": "./plugins/brain",
+      "description": "Save notes to your second brain (iCloud-synced)",
+      "version": "1.0.0"
+    }
+  ]
+}
