@@ -1,7 +1,7 @@
 {
   "name": "brain",
   "description": "Second brain system - store notes and recall them with semantic search (Gemini embeddings)",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": {
     "name": "Noah Bratzel",
     "github": "Noahbrat"
