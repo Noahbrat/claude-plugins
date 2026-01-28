@@ -1,33 +1,43 @@
 ---
 name: brain
-description: Second brain system for storing and recalling notes. Use when the user wants to save notes, search their knowledge base, or recall information they've previously stored. Triggers on queries like "save this", "remember", "store note", "recall", "find in notes", "search memory", "what did I save about X".
+description: Second brain system for storing and recalling notes. Use when the user wants to save notes, search their knowledge base, or recall information they've previously stored. Triggers on queries like "save this", "remember", "store note", "recall", "find in notes", "search memory", "what did I save about X", "when is my anniversary", "how do I deploy".
 ---
 
 # Second Brain System
 
-A unified system for storing notes and recalling them with semantic search.
+Store notes and recall them with semantic search.
 
-## Commands Available
+## Recalling Information
 
-- `/brain:store [note]` — Save a note to daily brain file
-- `/brain:recall [query]` — Semantic search across brain and memory
-- `/brain:setup` — Configure iCloud sync for cross-device access
+When the user wants to find/recall/search for something, run the bundled recall script:
 
-## Automatic Behavior
+```bash
+python3 scripts/recall.py "user's search query"
+```
 
-When the user asks to save/store something, use `/brain:store`.
-When the user asks to find/recall something, use `/brain:recall`.
+The script:
+- Searches `memory/*.md` and `brain/*.md` files
+- Uses Gemini embeddings for semantic matching
+- Returns top 5 relevant snippets with scores
 
-## Requirements for Recall
+**Requirements:** `pip install google-generativeai` and `GEMINI_API_KEY` env var.
 
-- Python 3.8+
-- `google-generativeai` package
-- Gemini API key (env var `GEMINI_API_KEY` or in `~/.clawdbot/clawdbot.json`)
+## Storing Notes
 
-## Storage Locations
+When the user wants to save/store a note:
 
-Notes are stored in:
-- `brain/YYYY-MM-DD.md` — Daily brain dumps
-- `memory/*.md` — Organized knowledge files
+1. Get today's date (YYYY-MM-DD)
+2. Append to `~/clawd/brain/{date}.md` (or `memory/` for organized notes)
+3. Format:
+   ```markdown
+   ## {time} {timezone}
+   {note}
+   Source: Claude Code
+   
+   ---
+   ```
+4. Confirm: "🧠 Saved to brain!"
 
-Both can be synced via iCloud using `/brain:setup`.
+## Setup (First Time)
+
+If user hasn't set up iCloud sync, suggest running `/brain:setup` to link `~/clawd/brain/` and `~/clawd/memory/` to iCloud Drive for cross-device access.
