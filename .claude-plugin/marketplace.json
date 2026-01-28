@@ -12,14 +12,8 @@
     {
       "name": "brain",
       "source": "./plugins/brain",
-      "description": "Save notes to your second brain (iCloud-synced)",
-      "version": "1.0.0"
-    },
-    {
-      "name": "recall",
-      "source": "./plugins/recall",
-      "description": "Semantic memory search using Gemini embeddings",
-      "version": "1.0.0"
+      "description": "Second brain - store notes and recall with semantic search",
+      "version": "2.0.0"
     }
   ]
 }

@@ -46,21 +46,26 @@ def get_api_key() -> Optional[str]:
     return None
 
 
-def find_memory_dir() -> Optional[Path]:
-    """Find the memory directory, checking common locations."""
-    # Check current directory and parents for memory/
+def find_search_dirs() -> list[Path]:
+    """Find memory and brain directories to search."""
+    dirs = []
     cwd = Path.cwd()
+    
+    # Check current directory and parents for memory/ and brain/
     for parent in [cwd] + list(cwd.parents)[:5]:
-        memory_dir = parent / "memory"
-        if memory_dir.is_dir():
-            return memory_dir
+        for dirname in ["memory", "brain"]:
+            search_dir = parent / dirname
+            if search_dir.is_dir() and search_dir not in dirs:
+                dirs.append(search_dir)
     
-    # Check clawd workspace
-    clawd_memory = Path.home() / "clawd" / "memory"
-    if clawd_memory.is_dir():
-        return clawd_memory
+    # Check clawd workspace as fallback
+    clawd_path = Path.home() / "clawd"
+    for dirname in ["memory", "brain"]:
+        search_dir = clawd_path / dirname
+        if search_dir.is_dir() and search_dir not in dirs:
+            dirs.append(search_dir)
     
-    return None
+    return dirs
 
 
 def chunk_text(text: str, chunk_size: int = 500, overlap: int = 100) -> list[tuple[int, int, str]]:
@@ -181,45 +186,50 @@ def main():
     
     genai.configure(api_key=api_key)
     
-    # Find memory directory
-    memory_dir = find_memory_dir()
-    if not memory_dir:
-        print("Error: Could not find memory/ directory.")
-        print("Make sure you're in a workspace with a memory/ folder.")
+    # Find directories to search (memory/ and brain/)
+    search_dirs = find_search_dirs()
+    if not search_dirs:
+        print("Error: Could not find memory/ or brain/ directory.")
+        print("Make sure you're in a workspace with a memory/ or brain/ folder.")
+        print("Run /brain:setup to configure iCloud sync.")
         sys.exit(1)
     
-    # Also check for MEMORY.md in parent
-    memory_md = memory_dir.parent / "MEMORY.md"
-    
     print(f"🔍 Searching for: {query}")
-    print(f"📁 Memory directory: {memory_dir}")
+    print(f"📁 Searching in: {', '.join(str(d) for d in search_dirs)}")
     print()
     
-    # Search
-    results = search_memory(query, memory_dir)
+    results = []
+    checked_memory_md = set()
     
-    # Also search MEMORY.md if it exists
-    if memory_md.exists():
-        content = memory_md.read_text()
-        chunks = chunk_text(content)
-        query_embedding = get_query_embedding(query)
+    # Search each directory
+    for search_dir in search_dirs:
+        dir_results = search_memory(query, search_dir)
+        results.extend(dir_results)
         
-        for start_line, end_line, text in chunks:
-            chunk_embedding = get_embedding(text)
-            score = cosine_similarity(query_embedding, chunk_embedding)
+        # Also check for MEMORY.md in parent (but only once per parent)
+        memory_md = search_dir.parent / "MEMORY.md"
+        if memory_md.exists() and str(memory_md) not in checked_memory_md:
+            checked_memory_md.add(str(memory_md))
+            content = memory_md.read_text()
+            chunks = chunk_text(content)
+            query_embedding = get_query_embedding(query)
             
-            if score >= 0.3:
-                results.append({
-                    "path": "MEMORY.md",
-                    "start_line": start_line,
-                    "end_line": end_line,
-                    "score": score,
-                    "snippet": text[:500] + ("..." if len(text) > 500 else "")
-                })
-        
-        # Re-sort after adding MEMORY.md results
-        results.sort(key=lambda x: x["score"], reverse=True)
-        results = results[:5]
+            for start_line, end_line, text in chunks:
+                chunk_embedding = get_embedding(text)
+                score = cosine_similarity(query_embedding, chunk_embedding)
+                
+                if score >= 0.3:
+                    results.append({
+                        "path": "MEMORY.md",
+                        "start_line": start_line,
+                        "end_line": end_line,
+                        "score": score,
+                        "snippet": text[:500] + ("..." if len(text) > 500 else "")
+                    })
+    
+    # Sort all results and take top 5
+    results.sort(key=lambda x: x["score"], reverse=True)
+    results = results[:5]
     
     if not results:
         print("No relevant results found.")
