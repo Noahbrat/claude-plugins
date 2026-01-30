@@ -1,0 +1,10 @@
+{
+  "name": "code-review",
+  "description": "Universal code review framework - thorough, config-driven reviews that adapt to any codebase",
+  "version": "1.0.0",
+  "author": {
+    "name": "Noah Bratzel",
+    "github": "Noahbrat"
+  },
+  "keywords": ["code-review", "review", "quality", "concurrency", "architecture", "schema", "security"]
+}
