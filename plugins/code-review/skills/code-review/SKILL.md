@@ -2,7 +2,7 @@
 name: code-review
 description: >
   Universal code review framework. Performs thorough, multi-phase reviews that adapt to any codebase.
-  Loads .code-review.yml from repo root for project-specific conventions, patterns, and custom phases.
+  Loads .claude/code-review.yml for project-specific conventions, patterns, and custom phases.
   Use for "review this code", "code review", "review my changes", "review branch", "review PR".
 ---
 
@@ -25,8 +25,8 @@ $ARGUMENTS
 Before starting the review, check for project-specific configuration:
 
 ```bash
-# Check for config in repo root
-cat .code-review.yml 2>/dev/null || cat .code-review.yaml 2>/dev/null
+# Check for config in .claude/ directory
+cat .claude/code-review.yml 2>/dev/null || cat .claude/code-review.yaml 2>/dev/null
 ```
 
 ### If config exists:
@@ -37,10 +37,10 @@ cat .code-review.yml 2>/dev/null || cat .code-review.yaml 2>/dev/null
 
 ### If NO config exists:
 - Run the review using universal phases only
-- After the review, analyze the repo structure and auto-generate a draft `.code-review.yml`
+- After the review, analyze the repo structure and auto-generate a draft `.claude/code-review.yml`
 - Present the draft config to the user:
-  > 📋 **No `.code-review.yml` found.** I've drafted one based on your repo structure.
-  > Review it below and save to your repo root to enable project-specific reviews.
+  > 📋 **No `.claude/code-review.yml` found.** I've drafted one based on your repo structure.
+  > Review it below and save to `.claude/code-review.yml` to enable project-specific reviews.
 - Include the draft in a fenced YAML block they can copy
 
 ### Auto-detection heuristics (for draft config generation):
@@ -201,7 +201,7 @@ Identify serialization points and potential deadlocks in the cascade.
 - **Environment parity** — are there dev-only hacks that will break in production?
 
 ### Config-Driven Checks:
-If `patterns` are defined in `.code-review.yml`, check compliance:
+If `patterns` are defined in `.claude/code-review.yml`, check compliance:
 
 | Pattern | What to Check |
 |---------|---------------|
@@ -222,7 +222,7 @@ For any unrecognized pattern names in config, treat them as custom labels and ch
 
 ## Config-Driven Custom Phases
 
-If `.code-review.yml` defines `custom_phases`, execute them after the universal phases.
+If `.claude/code-review.yml` defines `custom_phases`, execute them after the universal phases.
 
 Each custom phase:
 ```yaml
