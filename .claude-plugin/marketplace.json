@@ -19,7 +19,7 @@
       "name": "code-review",
       "source": "./plugins/code-review",
       "description": "Universal code review framework - thorough, config-driven reviews for any codebase",
-      "version": "1.0.0"
+      "version": "1.1.0"
     }
   ]
 }
